@@ -1,0 +1,167 @@
+/* Velvet Hour — the theatre's look: ink, brass and velvet. */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; background: #0b0d15; overflow: hidden; }
+
+body {
+  font-family: Verdana, Geneva, sans-serif;
+  color: #e8e0c8;
+}
+
+#wrap { position: relative; width: 1280px; height: 720px; margin: 0 auto; }
+
+#stage {
+  position: absolute; inset: 0;
+  width: 1280px; height: 720px;
+  background: #10131c;
+}
+
+/* --- Top bar --- */
+#topbar {
+  position: absolute; top: 0; left: 0; right: 0; height: 56px;
+  display: flex; align-items: center; gap: 24px;
+  padding: 0 16px;
+  background: linear-gradient(#171a26, #12141f);
+  border-bottom: 1px solid #2c3145;
+  z-index: 5;
+}
+
+.tb-left { min-width: 200px; }
+#hud-title {
+  font-family: Georgia, serif; font-size: 22px; font-weight: 700;
+  letter-spacing: 3px; color: #d9a441;
+}
+#hud-sub { font-size: 10px; letter-spacing: 2px; color: #8b93a8; margin-top: 2px; }
+
+.tb-mid { flex: 1; }
+#hud-objective { font-size: 12px; color: #f2e3c2; letter-spacing: 0.5px; }
+#hud-prompt { font-size: 12px; color: #8fd0ff; margin-top: 3px; min-height: 14px; }
+
+.tb-right { display: flex; align-items: center; gap: 14px; }
+.stat { text-align: right; }
+.stat label { display: block; font-size: 9px; letter-spacing: 2px; color: #8b93a8; }
+.stat b { font-size: 14px; color: #f2e3c2; }
+
+.pill {
+  font-size: 12px; font-weight: 700; letter-spacing: 2px;
+  padding: 6px 12px; border-radius: 3px; min-width: 118px; text-align: center;
+}
+.pill.unseen { background: #1d3a2a; color: #7dffa8; }
+.pill.hidden { background: #1d3346; color: #8fd0ff; }
+.pill.suspicious { background: #4a3410; color: #ffd34d; }
+.pill.hunted { background: #571b18; color: #ff8a7a; }
+
+/* --- Side panel --- */
+#side {
+  position: absolute; top: 56px; left: 0; bottom: 36px; width: 220px;
+  padding: 14px 12px;
+  background: rgba(16, 19, 30, 0.92);
+  border-right: 1px solid #2c3145;
+  z-index: 5; overflow: hidden;
+}
+#side h2 {
+  font-size: 11px; letter-spacing: 2px; color: #d9a441;
+  border-bottom: 1px solid #2c3145; padding-bottom: 6px; margin: 12px 0 8px;
+}
+#side h2:first-child { margin-top: 0; }
+
+.guard-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; padding: 6px 4px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+.guard-row .g-dot {
+  width: 9px; height: 9px; border-radius: 50%;
+  background: #e8862e; flex: none;
+}
+.guard-row.suspicious .g-dot, .guard-row.investigate .g-dot { background: #ffd34d; }
+.guard-row.chase .g-dot { background: #ff5a4e; }
+.guard-row b { flex: 1; font-weight: 600; }
+.guard-row .g-state { font-size: 10px; letter-spacing: 1px; color: #8b93a8; }
+.guard-row.chase .g-state { color: #ff8a7a; }
+.guard-row.suspicious .g-state, .guard-row.investigate .g-state { color: #ffd34d; }
+.guard-row .g-dist { font-size: 11px; color: #8b93a8; }
+
+.legend { list-style: none; font-size: 11px; line-height: 1.5; color: #c9c2a8; }
+.legend li { margin: 7px 0; display: flex; gap: 8px; align-items: flex-start; }
+.sw { width: 14px; height: 14px; flex: none; margin-top: 1px; border-radius: 2px; }
+.sw.cone { background: rgba(232, 190, 90, 0.55); clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.sw.curtain { background: #7a2836; }
+.sw.crate { background: #6b4a26; }
+.sw.seat { background: #42587e; }
+.sw.lamp { background: #ffe9ad; border-radius: 50%; }
+.sw.creak { background: repeating-linear-gradient(45deg, #8a6a2f 0 3px, #3a2c12 3px 6px); }
+.sw.exit { background: #1d7a4c; }
+
+.hint { font-size: 11px; color: #8b93a8; margin-top: 12px; }
+
+/* --- Bottom bar --- */
+#bottombar {
+  position: absolute; left: 0; right: 0; bottom: 0; height: 36px;
+  display: flex; align-items: center; gap: 16px;
+  padding: 0 14px;
+  background: linear-gradient(#12141f, #0d0f18);
+  border-top: 1px solid #2c3145;
+  font-size: 11px; color: #8b93a8; z-index: 5;
+}
+#bottombar b { color: #e8e0c8; }
+#bottombar .right { margin-left: auto; }
+
+/* --- Flash line --- */
+#flash {
+  position: absolute; left: 50%; bottom: 52px; transform: translateX(-50%);
+  background: rgba(12, 14, 22, 0.92); border: 1px solid #d9a441;
+  color: #f2e3c2; font-size: 13px; padding: 8px 16px; border-radius: 3px;
+  opacity: 0; pointer-events: none; transition: opacity 0.25s; z-index: 8;
+  white-space: nowrap;
+}
+#flash.show { opacity: 1; }
+
+/* --- Overlays --- */
+.overlay {
+  position: absolute; inset: 0; z-index: 10;
+  display: none; align-items: center; justify-content: center;
+  background: rgba(8, 10, 16, 0.72);
+}
+.overlay.show { display: flex; }
+
+.card {
+  width: 640px; max-height: 640px; overflow: auto;
+  background: linear-gradient(#1a1d2b, #12141f);
+  border: 1px solid #d9a441; border-radius: 6px;
+  padding: 28px 32px; text-align: center;
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.6);
+}
+.card.small { width: 420px; }
+
+.kicker { font-size: 11px; letter-spacing: 3px; color: #d9a441; margin-bottom: 10px; }
+.card h1 {
+  font-family: Georgia, serif; font-size: 38px; letter-spacing: 2px;
+  color: #f2e3c2; margin-bottom: 12px;
+}
+.card .tag { font-size: 14px; line-height: 1.6; color: #c9c2a8; margin-bottom: 16px; }
+
+.how { list-style: none; text-align: left; font-size: 13px; line-height: 1.55; color: #c9c2a8; }
+.how li { margin: 9px 0; padding-left: 18px; position: relative; }
+.how li::before { content: "◆"; position: absolute; left: 0; color: #d9a441; font-size: 10px; top: 3px; }
+.how b { color: #f2e3c2; }
+
+button.big {
+  margin-top: 18px; padding: 13px 34px;
+  font-family: Georgia, serif; font-size: 16px; letter-spacing: 2px;
+  color: #171208; background: #d9a441; border: none; border-radius: 3px;
+  cursor: pointer;
+}
+button.big:hover { background: #e8b957; }
+
+.keys { margin-top: 14px; font-size: 11px; color: #8b93a8; }
+
+.stats { margin: 8px auto 4px; width: 420px; text-align: left; }
+.stats div {
+  display: flex; justify-content: space-between;
+  font-size: 14px; padding: 7px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+.stats dt { color: #8b93a8; letter-spacing: 1px; }
+.stats dd { color: #f2e3c2; font-weight: 700; }

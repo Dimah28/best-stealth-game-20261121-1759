@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Velvet Hour — steal the Gilded Marionette</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="wrap">
+  <canvas id="stage" width="1280" height="720"></canvas>
+
+  <header id="topbar">
+    <div class="tb-left">
+      <div id="hud-title">VELVET HOUR</div>
+      <div id="hud-sub">NIGHT 1 — THE MARLOW THEATRE</div>
+    </div>
+    <div class="tb-mid">
+      <div id="hud-objective">OBJECTIVE: lift the Gilded Marionette, then reach the stage door</div>
+      <div id="hud-prompt"></div>
+    </div>
+    <div class="tb-right">
+      <span id="detect-pill" class="pill unseen">UNSEEN</span>
+      <div class="stat"><label>TIME</label><b id="hud-time">00:00</b></div>
+      <div class="stat"><label>PLAYBILLS</label><b id="hud-loot">0/3</b></div>
+      <div class="stat"><label>BUTTONS</label><b id="hud-buttons">3</b></div>
+      <div class="stat"><label>TAKE</label><b id="hud-score">$0</b></div>
+      <div class="stat"><label>STRIKES</label><b id="hud-strikes">○○○</b></div>
+    </div>
+  </header>
+
+  <aside id="side">
+    <h2>USHERS ON DUTY</h2>
+    <div id="guard-list"></div>
+    <h2>FIELD NOTES</h2>
+    <ul class="legend">
+      <li><span class="sw cone"></span>Usher + vision cone (what they see)</li>
+      <li><span class="sw curtain"></span>Velvet curtain: blocks sight, hides you</li>
+      <li><span class="sw crate"></span>Prop crate: blocks sight</li>
+      <li><span class="sw seat"></span>Seat row: hidden only while you sneak</li>
+      <li><span class="sw lamp"></span>Footlights: you are seen from afar</li>
+      <li><span class="sw creak"></span>Stage boards: loud unless you sneak</li>
+      <li><span class="sw exit"></span>Stage door: opens once you hold the prize</li>
+    </ul>
+    <p class="hint">Press <b>H</b> for the full field notes.</p>
+  </aside>
+
+  <footer id="bottombar">
+    <span><b>WASD / ARROWS</b> move</span>
+    <span><b>SHIFT</b> sneak</span>
+    <span><b>SPACE</b> sprint (loud)</span>
+    <span><b>MOUSE</b> aim, <b>CLICK</b> throw a button</span>
+    <span><b>E</b> take</span>
+    <span><b>H</b> notes</span>
+    <span><b>M</b> mute</span>
+    <span><b>P</b> pause</span>
+    <span class="right"><b>STANCE</b> <span id="hud-stance">STILL</span> · <b>LIGHT</b> <span id="hud-light">SHADOW</span></span>
+  </footer>
+
+  <div id="flash"></div>
+
+  <div id="overlay-title" class="overlay">
+    <div class="card">
+      <div class="kicker">THE MARLOW THEATRE · AFTER MIDNIGHT</div>
+      <h1>VELVET HOUR</h1>
+      <p class="tag">You are Wren, a cat burglar with three brass buttons and a quiet pair
+      of shoes. The Gilded Marionette hangs above the stage, and four ushers
+      walk the dark with lanterns. Lift it. Leave unseen.</p>
+      <ul class="how">
+        <li><b>Sneak</b> through the seats and curtains — the cones cannot see you there.</li>
+        <li><b>Throw a button</b> to send an usher off to look the other way.</li>
+        <li><b>Mind the footlights</b> — in the light you are seen from across the room.</li>
+        <li><b>Three strikes</b> and the house wins. Never spotted at all and the night pays double.</li>
+      </ul>
+      <button class="big" id="btn-start">BEGIN THE NIGHT</button>
+      <p class="keys">WASD move · SHIFT sneak · SPACE sprint · CLICK throw · E take · H notes</p>
+    </div>
+  </div>
+
+  <div id="overlay-win" class="overlay">
+    <div class="card">
+      <div class="kicker">THE CURTAIN FALLS</div>
+      <h1>THE MARIONETTE IS YOURS</h1>
+      <p class="tag">You slipped out the stage door with the Gilded Marionette, and no usher
+      ever knew you were there — or, if they did, they never caught you.</p>
+      <dl class="stats">
+        <div><dt>Time</dt><dd id="win-time">—</dd></div>
+        <div><dt>Playbills</dt><dd id="win-loot">—</dd></div>
+        <div><dt>Strikes</dt><dd id="win-strikes">—</dd></div>
+        <div><dt>Ghost</dt><dd id="win-ghost">—</dd></div>
+        <div><dt>Take</dt><dd id="win-score">—</dd></div>
+      </dl>
+      <button class="big" id="btn-again">STEAL IT AGAIN</button>
+    </div>
+  </div>
+
+  <div id="overlay-lose" class="overlay">
+    <div class="card">
+      <div class="kicker">THE HOUSE WINS</div>
+      <h1>CAUGHT — THREE STRIKES</h1>
+      <p class="tag">The ushers walk you to the stage door themselves this time. The
+      Marionette stays where it hangs. Tomorrow night, quieter shoes.</p>
+      <button class="big" id="btn-retry">TRY AGAIN</button>
+    </div>
+  </div>
+
+  <div id="overlay-pause" class="overlay">
+    <div class="card small">
+      <h1>PAUSED</h1>
+      <p class="tag">The theatre holds its breath. Press P to go on.</p>
+    </div>
+  </div>
+
+  <div id="overlay-notes" class="overlay">
+    <div class="card">
+      <div class="kicker">WREN'S FIELD NOTES</div>
+      <h1>HOW THE HOUSE WORKS</h1>
+      <ul class="how">
+        <li><b>Vision cones</b> are what an usher sees. A dashed edge means the cone ends there.</li>
+        <li><b>Light matters.</b> In a lamp pool you are spotted from far away; in shadow, only up close.</li>
+        <li><b>Sneaking</b> is slow and quiet, and the cones barely notice you. <b>Sprinting</b> is fast and loud.</li>
+        <li><b>Curtains</b> hide you completely. <b>Seat rows</b> hide you only while you sneak.</li>
+        <li><b>Prop crates</b> block sight — and bodies. Walk around them, not through them.</li>
+        <li><b>Stage boards creak.</b> Cross them sneaking, or every usher turns around.</li>
+        <li><b>Buttons</b> (click to throw) clink where they land. Ushers go to look. That is the whole trick.</li>
+        <li><b>Suspicion</b> is the arc over an usher's head. Full arc, and he runs at you. Three catches end the night.</li>
+        <li><b>Ghost:</b> finish never spotted and the take pays +$500.</li>
+      </ul>
+      <p class="keys">Press H to close these notes.</p>
+    </div>
+  </div>
+</div>
+<script type="module" src="src/game.js"></script>
+</body>
+</html>
